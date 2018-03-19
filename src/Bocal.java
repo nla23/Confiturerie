@@ -1,11 +1,9 @@
 
 public class Bocal implements Runnable {
 
-	private TypeConfiture type; //Pour différencer les types de confitures, ici on a que le type A et B
+	
 	private int bocalNumero; //Numero du bocal, le plus petit nombre étant le premier
-	enum TypeConfiture {
-		A,B;
-	}
+	private TypeConfiture type;
 	
 	public Bocal(final TypeConfiture _type) 
 	{

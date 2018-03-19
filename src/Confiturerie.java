@@ -7,13 +7,13 @@
  * Nicolas Lauzon			- 111 101 145
  */
 
+
 public class Confiturerie 
 {
 
 	public static void main(String[] args) 
 	{
 		
-         
 	}
 
 }
