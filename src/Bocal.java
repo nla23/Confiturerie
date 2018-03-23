@@ -20,11 +20,14 @@ public class Bocal implements Runnable
 		this.type = _type;
 	}
 	
-	public Bocal(final char _type, final Etiquettage _etiquette, final Valve _valve)
+	public Bocal(final char _type, final Etiquettage _etiquette, final Valve _valve, final int _numeroDuBocal,final char _typePriorite)
 	{
+		assert (_numeroDuBocal >=0);
 		this.type = _type;
 		this.etiquette = _etiquette;
 		this.valve = _valve;
+		this.bocalNumero = _numeroDuBocal;
+		type_priorite = _typePriorite;
 	}
 	
 	public char getTypeConfiture()
@@ -50,7 +53,7 @@ public class Bocal implements Runnable
 	
 	public int getNumero() 
 	{
-		return bocalNumero;
+		return this.bocalNumero;
 	}
 	
 	@Override
@@ -60,7 +63,7 @@ public class Bocal implements Runnable
 		//System.out.println("Creation Bocal: " + this.bocalNumero);
 		
 		// On passe le type prioritaire en premier sur le tapis (a ou b). 
-		
+		//TODO synchronized à ajouter
 		if (this.type_priorite == this.type)
 		{
 			while(!isFull && !isLabel)

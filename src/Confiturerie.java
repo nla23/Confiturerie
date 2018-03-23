@@ -11,6 +11,9 @@ import java.util.Scanner;
 public class Confiturerie 
 {
 
+	static Thread bocauxA[];
+	static Thread bocauxB[];
+	
 	public static void main(String[] args) 
 	{
 		Valve valveA = new Valve('A');
@@ -42,27 +45,39 @@ public class Confiturerie
 		}
 			
 		int i;
-		Bocal[] bocauxA = new Bocal[nb_BocalA];
-		Bocal[] bocauxB = new Bocal[nb_BocalB];
+		bocauxA = new Thread[nb_BocalA];
+		bocauxB = new Thread[nb_BocalB];
 		
 		for (i = 0; i < nb_BocalA; i++)
 		{
-			bocauxA[i] = new Bocal('A',etiquetteA,valveA);
-			bocauxA[i].setNumero(i);
-			bocauxA[i].setTypePriorite(type_priorite);
-			Thread newThreadA = new Thread(bocauxA[i]);
-			newThreadA.start();
+			// bocauxA[i] = new Bocal('A',etiquetteA,valveA);
+			//bocauxA[i].setNumero(i);
+			//bocauxA[i].setTypePriorite(type_priorite);
+			bocauxA[i] = new Thread(new Bocal('A',etiquetteA,valveA,i+1,type_priorite));
+			//bocauxA[i].start();
 		}
 		for (i = 0; i < nb_BocalB; i++)
 		{
-			bocauxB[i] = new Bocal('B',etiquetteB,valveB);
-			bocauxB[i].setNumero(i);
-			bocauxB[i].setTypePriorite(type_priorite);
-			Thread newThreadB = new Thread(bocauxB[i]);
-			newThreadB.start();
+			//bocauxB[i] = new Bocal('B',etiquetteB,valveB);
+			//bocauxB[i].setNumero(i);
+			//bocauxB[i].setTypePriorite(type_priorite);
+			bocauxB[i] = new Thread(new Bocal('B',etiquetteB,valveB,i+1,type_priorite));
+			//bocauxB[i].start();
 		}
+		
+		bocauxA[0].start();
+		
+		/*
+		for (int j = 0; j < nb_BocalA; j++) {
+				bocauxA[j].interrupt();
+			}
+		for (int k = 0; k < nb_BocalB; k++) {
+				bocauxB[k].interrupt();
+		}
+		*/
+		
 	}
-	
+	//TODO arrêter les thread
 	public static int askInput(String _message) 
 	{
 		//On passe en parametre le message en string et on retourne un int comme input de l'utilisateur

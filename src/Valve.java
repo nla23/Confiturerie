@@ -3,7 +3,7 @@ public class Valve {
 
 	private boolean ouvert = false; //False = fermé, true = ouvert
 	private char typeValve;
-	private int nextBocal = 0;
+	private int nextBocal = 1;
 	public Valve(final char _type)
 	{
 		this.typeValve = _type;
@@ -13,7 +13,7 @@ public class Valve {
 		if(this.ouvert)
 		{
 			this.ouvert = false;
-			System.out.println("Valve " + this.typeValve + " fermer.");
+			System.out.println("Valve " + this.typeValve + " fermee.");
 		}
 		else
 		{
