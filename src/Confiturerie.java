@@ -4,7 +4,7 @@ import java.util.Scanner;
  * 
  * Stephane Lalancette 		- 908 279 903    
  * Francis Charest 	   		- 905 179 619
- * Felix Veillette-Potvin 	-
+ * Felix Veillette-Potvin 	- 111 074 805
  * Nicolas Lauzon			- 111 101 145
  */
 
