@@ -1,5 +1,6 @@
 
-public class Etiquettage {
+public class Etiquettage 
+{
 	
 	private char typeEtiquette; //Type d'étiquette
 	private int nextBocal = 0;
