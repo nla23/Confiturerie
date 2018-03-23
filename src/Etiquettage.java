@@ -1,26 +1,37 @@
+import java.util.LinkedList;
 
 public class Etiquettage 
 {
-	
-	private char typeEtiquette; //Type d'étiquette
-	private int nextBocal = 0;
-	
-	
-	public Etiquettage(final char _type)
-	{
-		this.typeEtiquette = _type;
-	}
 
-	public char getTypeEtiquette()
+	private char typePriorite;
+	private int nbTypeA;
+	private int nbTypeB;
+	private LinkedList<Integer> queue = new LinkedList<Integer>();
+	
+	public Etiquettage(final int _nbTypeA, final int _nbTypeB, final char _typePriorite)
 	{
-		return this.typeEtiquette;
+		this.nbTypeA = _nbTypeA;
+		this.nbTypeB = _nbTypeB;
+		this.typePriorite = _typePriorite;
 	}
 	public int getNextBocal()
 	{
-		return this.nextBocal;
+		return this.queue.remove();
 	}
-	public void changeNextBocal()
+	public int peekNextBocal()
 	{
-		this.nextBocal++;
+		return this.queue.peekFirst();
+	}
+	public void setNextBocal(final int _numero)
+	{
+		this.queue.add(_numero);
+	}
+	public void setPriority(final char _type)
+	{
+		this.typePriorite = _type;
+	}
+	public char getPriority()
+	{
+		return this.typePriorite;
 	}
 }

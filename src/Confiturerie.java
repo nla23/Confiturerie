@@ -1,4 +1,6 @@
 import java.util.Scanner;
+import java.util.concurrent.locks.ReentrantLock;
+
 /*
  * Equipe 1 - Projet Confiturerie - GLO-3003
  * 
@@ -7,68 +9,71 @@ import java.util.Scanner;
  * Felix Veillette-Potvin 	-
  * Nicolas Lauzon			- 111 101 145
  */
-
+/*--------------------------------------------------
+ * Bug connus : 
+ * Si on priorise B, les threads de type A ne font rien. Genre thread en famine.
+ * 
+ */
 public class Confiturerie 
 {
 
 	public static void main(String[] args) 
 	{
-		Valve valveA = new Valve('A');
-		Valve valveB = new Valve('B');
-		Etiquettage etiquetteA = new Etiquettage('A');
-		Etiquettage etiquetteB = new Etiquettage('B');
-		
-		int nb_BocalA = askInput("Entrer le nombre de bocaux A:");
-		int nb_BocalB = askInput("Entrer le nombre de bocaux B:");
+		Scanner reader = new Scanner(System.in);
+		Valve valve;
+		Etiquettage etiquette;
+		ReentrantLock lock = new ReentrantLock();
+		int nb_BocalA = askInputInt("Entrer le nombre de bocaux A:",reader);
+		int nb_BocalB = askInputInt("Entrer le nombre de bocaux B:",reader);
 	
 		// On n'accepte pas plus de 100 bocaux de n'importe quel type.
 		while ((nb_BocalA > 100) || (nb_BocalA < 1) || (nb_BocalB > 100) || (nb_BocalB < 1))
 		{
 			System.out.println("Le nombre de bocal de type A ou B doit etre inclus entre 1 et 100");
-			nb_BocalA = askInput("Entrer le nombre de bocaux A:");
-			nb_BocalB = askInput("Entrer le nombre de bocaux B:");
+			nb_BocalA = askInputInt("Entrer le nombre de bocaux A:",reader);
+			nb_BocalB = askInputInt("Entrer le nombre de bocaux B:",reader);
 		}
-		
-		Scanner scan_type=new Scanner(System.in);
-		System.out.println("Quel type doit-on traiter en priorite: (A, B)");
-		char type_priorite=scan_type.next().charAt(0);
-		
+		char type_priorite = askInputChar("Quel type doit-on traiter en priorite: (A, B)",reader);
 		// On s'assure que seul les types A et B sont acceptés.
 		while ((type_priorite != 'A') && (type_priorite != 'B'))
 		{
 			System.out.println("Seul les type A ou B sont acceptes (majuscules seulement)");
-			System.out.println("Quel type doit-on traiter en priorite: (A, B)");
-			type_priorite=scan_type.next().charAt(0);
+			type_priorite = askInputChar("Quel type doit-on traiter en priorite: (A, B)",reader);
 		}
-			
-		int i;
-		Bocal[] bocauxA = new Bocal[nb_BocalA];
-		Bocal[] bocauxB = new Bocal[nb_BocalB];
-		
-		for (i = 0; i < nb_BocalA; i++)
+		Bocal[] bocaux = new Bocal[nb_BocalA+nb_BocalB];
+		valve = new Valve(nb_BocalA, nb_BocalB, type_priorite);
+		etiquette = new Etiquettage(nb_BocalA, nb_BocalB,type_priorite);
+
+		for (int i = 0; i < nb_BocalA; i++)
 		{
-			bocauxA[i] = new Bocal('A',etiquetteA,valveA);
-			bocauxA[i].setNumero(i);
-			bocauxA[i].setTypePriorite(type_priorite);
-			Thread newThreadA = new Thread(bocauxA[i]);
+			bocaux[i] = new Bocal('A',etiquette,valve,lock);
+			bocaux[i].setNumero(i);
+			Thread newThreadA = new Thread(bocaux[i]);
 			newThreadA.start();
 		}
-		for (i = 0; i < nb_BocalB; i++)
+		for (int i = 0; i < nb_BocalB; i++)
 		{
-			bocauxB[i] = new Bocal('B',etiquetteB,valveB);
-			bocauxB[i].setNumero(i);
-			bocauxB[i].setTypePriorite(type_priorite);
-			Thread newThreadB = new Thread(bocauxB[i]);
+			bocaux[i+nb_BocalA] = new Bocal('B',etiquette,valve,lock);
+			bocaux[i+nb_BocalA].setNumero(i+nb_BocalA);
+			Thread newThreadB = new Thread(bocaux[i+nb_BocalA]);
 			newThreadB.start();
 		}
+		reader.close();
 	}
 	
-	public static int askInput(String _message) 
+	public static int askInputInt(String _message, Scanner _reader) 
 	{
 		//On passe en parametre le message en string et on retourne un int comme input de l'utilisateur
-		Scanner reader = new Scanner(System.in);
 		System.out.println(_message);
-		int n = reader.nextInt();
+		int n = _reader.nextInt();
 		return n;
 	}
+	public static char askInputChar(String _message, Scanner _reader)
+	{
+		//On passe en parametre le message en string et on retourne un int comme input de l'utilisateur
+		System.out.println(_message);
+		String n = _reader.next();
+		return n.charAt(0);
+	}
+	
 }
