@@ -1,5 +1,6 @@
 
-public class Valve {
+public class Valve
+{
 
 	private boolean ouvert = false; //False = fermé, true = ouvert
 	private char typeValve;
@@ -18,7 +19,7 @@ public class Valve {
 		else
 		{
 			this.ouvert = true;
-			System.out.println("Valve " + this.typeValve + " ouverte.");
+			System.out.println("Valve " + this.typeValve + " ouverte."); 
 		}
 	}
 	public int getNextBocal()

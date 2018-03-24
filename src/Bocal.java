@@ -54,10 +54,12 @@ public class Bocal implements Runnable
 	}
 	
 	@Override
+	//System.out.println("Creation Bocal: " + this.bocalNumero);
+	
 	//Exécution du thread à insérer ici
 	public void run()	
 	{		
-		//System.out.println("Creation Bocal: " + this.bocalNumero);
+		
 		
 		// On passe le type prioritaire en premier sur le tapis (a ou b). 
 		
@@ -82,8 +84,7 @@ public class Bocal implements Runnable
 				this.isLabel = true;
 			}
 		}
-		System.out.println("Le bocal " + this.bocalNumero + " de type " + this.type + " est termine.");
-		
+			
 		if (this.type_priorite != this.type)
 			
 		// Il faudrait que les threads du type non-prioritaire soit en wait le temps que ceux du type 
@@ -108,8 +109,11 @@ public class Bocal implements Runnable
 				this.etiquette.changeNextBocal();
 				this.isLabel = true;
 			}
-		}	
+	
+		}
+		
 		
 		System.out.println("Le bocal " + this.bocalNumero + " de type " + this.type + " est termine.");
+	
 	}
 }
