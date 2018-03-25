@@ -37,12 +37,12 @@ public class Bocal implements Runnable
 		return this.type_priorite;
 	}
 	
-	public void setTypePriorite(final char _typePriorite)
+	synchronized public void setTypePriorite(final char _typePriorite)
 	{
 		type_priorite = _typePriorite;
 	}
 	
-	public void setNumero(final int _numeroDuBocal) 
+	synchronized public void setNumero(final int _numeroDuBocal) 
 	{
 		assert (_numeroDuBocal >=0);
 		bocalNumero = _numeroDuBocal;
@@ -54,13 +54,11 @@ public class Bocal implements Runnable
 	}
 	
 	@Override
-	//System.out.println("Creation Bocal: " + this.bocalNumero);
 	
 	//Exécution du thread à insérer ici
 	public void run()	
 	{		
-		
-		
+			
 		// On passe le type prioritaire en premier sur le tapis (a ou b). 
 		
 		if (this.type_priorite == this.type)
@@ -69,6 +67,7 @@ public class Bocal implements Runnable
 			{
 				if(this.bocalNumero == this.valve.getNextBocal())
 				{
+								
 					System.out.println("Debut du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
 					this.valve.ChangerEtatValve();
 					System.out.println("Fin du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
@@ -86,11 +85,9 @@ public class Bocal implements Runnable
 		}
 			
 		if (this.type_priorite != this.type)
-			
 		// Il faudrait que les threads du type non-prioritaire soit en wait le temps que ceux du type 
 		// prioritaire ait tous passe. Si quelqu'un a une idee de comment on pourrait faire.
-			
-		{
+			{
 			while(!isFull && !isLabel)
 			{
 				if(this.bocalNumero == this.valve.getNextBocal())
@@ -111,7 +108,6 @@ public class Bocal implements Runnable
 			}
 	
 		}
-		
 		
 		System.out.println("Le bocal " + this.bocalNumero + " de type " + this.type + " est termine.");
 	

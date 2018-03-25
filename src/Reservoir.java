@@ -1,5 +1,6 @@
 
-public class Reservoir {
+public class Reservoir 
+{
 	private int volume;
 	private int capacite;
 	private char type; 
@@ -17,35 +18,43 @@ public class Reservoir {
 		this.type = _type;
 	}
 	
-	public void setType(final char _type) {
+	public void setType(final char _type) 
+	{
 		this.type = _type;
 	}
 	
-	public char getTypeConfiture() {
+	public char getTypeConfiture() 
+	{
 		return this.type;
 	}
 	
-	public void setCapacite(final int _capacite) {
+	public void setCapacite(final int _capacite) 
+	{
 		this.capacite = _capacite;
 	}
 	
-	public int getCapacite() {
+	public int getCapacite()
+	{
 		return this.capacite;
 	}
 	
-	public void setVolume(final int _volume) {
+	public void setVolume(final int _volume) 
+	{
 		this.volume = _volume;
 	}
 	
-	public int getVolume() {
+	public int getVolume() 
+	{
 		return this.volume;
 	}
 	
-	synchronized public void remplirPot(){
+	synchronized public void remplirPot()
+	{
 		 this.volume--;
 	}
 	
-	synchronized public void approvionnement(final int _volume) {
+	synchronized public void approvionnement(final int _volume)
+	{
 		this.volume = _volume;
 	}
 	

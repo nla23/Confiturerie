@@ -11,15 +11,16 @@ public class Etiquettage
 		this.typeEtiquette = _type;
 	}
 
-	public char getTypeEtiquette()
+	synchronized public char getTypeEtiquette()
 	{
 		return this.typeEtiquette;
 	}
-	public int getNextBocal()
+	
+	synchronized public int getNextBocal()
 	{
 		return this.nextBocal;
 	}
-	public void changeNextBocal()
+	synchronized public void changeNextBocal()
 	{
 		this.nextBocal++;
 	}
