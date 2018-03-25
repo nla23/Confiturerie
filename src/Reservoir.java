@@ -2,11 +2,27 @@
 public class Reservoir {
 	private int volume;
 	private int capacite;
+	private char type; 
 	
-	public Reservoir(final int _capacite, final int _volume)
+	enum TypeDeConfiture 
+	{
+		A,B;
+	}
+	
+	
+	public Reservoir(final int _capacite, final int _volume, final char _type)
 	{
 		this.capacite = _capacite;
 		this.volume= _volume;
+		this.type = _type;
+	}
+	
+	public void setType(final char _type) {
+		this.type = _type;
+	}
+	
+	public char getTypeConfiture() {
+		return this.type;
 	}
 	
 	public void setCapacite(final int _capacite) {
