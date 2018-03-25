@@ -41,11 +41,11 @@ public class Reservoir {
 		return this.volume;
 	}
 	
-	public void remplirPot(){
-		this.volume--;
+	synchronized public void remplirPot(){
+		 this.volume--;
 	}
 	
-	public void approvionnement(final int _volume) {
+	synchronized public void approvionnement(final int _volume) {
 		this.volume = _volume;
 	}
 	
