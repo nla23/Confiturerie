@@ -9,7 +9,7 @@ public class Valve
 	{
 		this.typeValve = _type;
 	}
-	public void ChangerEtatValve() // Change l'état de la valve
+	synchronized public void ChangerEtatValve() // Change l'état de la valve
 	{
 		if(this.ouvert)
 		{
@@ -22,11 +22,11 @@ public class Valve
 			System.out.println("Valve " + this.typeValve + " ouverte."); 
 		}
 	}
-	public int getNextBocal()
+	synchronized public int getNextBocal()
 	{
 		return this.nextBocal;
 	}
-	public void changeNextBocal()
+	synchronized public void changeNextBocal()
 	{
 		 nextBocal++;
 	}
