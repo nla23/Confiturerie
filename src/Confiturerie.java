@@ -17,6 +17,8 @@ public class Confiturerie
 		Valve valveB = new Valve('B');
 		Etiquettage etiquetteA = new Etiquettage('A');
 		Etiquettage etiquetteB = new Etiquettage('B');
+		Reservoir reservoirA = new Reservoir(5, 5,'A');
+		Reservoir reservoirB = new Reservoir(5, 5,'A');
 		
 		int nb_BocalA = askInput("Entrer le nombre de bocaux A:");
 		int nb_BocalB = askInput("Entrer le nombre de bocaux B:");
@@ -61,14 +63,14 @@ public class Confiturerie
 			for (i = 0; i < nb_BocalB; i++)
 			{
 				System.out.println("Creation Bocal " + i + " de type A");
-				bocauxA[i] = new Bocal('A',etiquetteA,valveA);
+				bocauxA[i] = new Bocal('A',etiquetteA,valveA,reservoirA);
 				bocauxA[i].setNumero(i);
 				bocauxA[i].setTypePriorite(type_priorite);
 				Thread newThreadA = new Thread(bocauxA[i]);
 				newThreadA.start();
 			
 				System.out.println("Creation Bocal " + i + " de type B");
-				bocauxB[i] = new Bocal('B',etiquetteB,valveB);
+				bocauxB[i] = new Bocal('B',etiquetteB,valveB,reservoirB);
 				bocauxB[i].setNumero(i);
 				bocauxB[i].setTypePriorite(type_priorite);
 				Thread newThreadB = new Thread(bocauxB[i]);
@@ -84,7 +86,7 @@ public class Confiturerie
 				for (i = 0; i < ecart_type; i++)
 				{
 					System.out.println("Creation Bocal " + i2 + " de type A");
-					bocauxA[i2] = new Bocal('A',etiquetteA,valveA);
+					bocauxA[i2] = new Bocal('A',etiquetteA,valveA,reservoirA);
 					bocauxA[i2].setNumero(i2);
 					bocauxA[i2].setTypePriorite(type_priorite);
 					Thread newThreadA = new Thread(bocauxA[i2]);
@@ -100,14 +102,14 @@ public class Confiturerie
 			for (i = 0; i < nb_BocalA; i++)
 			{
 				System.out.println("Creation Bocal " + i + " de type A");
-				bocauxA[i] = new Bocal('A',etiquetteA,valveA);
+				bocauxA[i] = new Bocal('A',etiquetteA,valveA,reservoirA);
 				bocauxA[i].setNumero(i);
 				bocauxA[i].setTypePriorite(type_priorite);
 				Thread newThreadA = new Thread(bocauxA[i]);
 				newThreadA.start();
 			
 				System.out.println("Creation Bocal " + i + " de type B");
-				bocauxB[i] = new Bocal('B',etiquetteB,valveB);
+				bocauxB[i] = new Bocal('B',etiquetteB,valveB,reservoirB);
 				bocauxB[i].setNumero(i);
 				bocauxB[i].setTypePriorite(type_priorite);
 				Thread newThreadB = new Thread(bocauxB[i]);
@@ -122,7 +124,7 @@ public class Confiturerie
 			{
 			
 				System.out.println("Creation Bocal " + i2 + " de type B");
-				bocauxB[i2] = new Bocal('B',etiquetteB,valveB);
+				bocauxB[i2] = new Bocal('B',etiquetteB,valveB, reservoirB);
 				bocauxB[i2].setNumero(i2);
 				bocauxB[i2].setTypePriorite(type_priorite);
 				Thread newThreadB = new Thread(bocauxB[i2]);

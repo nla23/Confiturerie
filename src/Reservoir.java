@@ -38,12 +38,12 @@ public class Reservoir
 		return this.capacite;
 	}
 	
-	public void setVolume(final int _volume) 
+	synchronized public void setVolume(final int _volume) 
 	{
 		this.volume = _volume;
 	}
 	
-	public int getVolume() 
+	synchronized public int getVolume() 
 	{
 		return this.volume;
 	}
@@ -53,7 +53,7 @@ public class Reservoir
 		 this.volume--;
 	}
 	
-	synchronized public void approvionnement(final int _volume)
+	synchronized public void approvisionnement(final int _volume)
 	{
 		this.volume = _volume;
 	}

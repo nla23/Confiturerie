@@ -9,6 +9,7 @@ public class Bocal implements Runnable
 	private Valve valve;
 	private boolean isFull = false;
 	private boolean isLabel = false;
+	private Reservoir reservoir;
 	
 	enum TypeDeConfiture 
 	{
@@ -20,12 +21,15 @@ public class Bocal implements Runnable
 		this.type = _type;
 	}
 	
-	public Bocal(final char _type, final Etiquettage _etiquette, final Valve _valve)
+	public Bocal(final char _type, final Etiquettage _etiquette, final Valve _valve, final Reservoir _reservoir)
 	{
 		this.type = _type;
 		this.etiquette = _etiquette;
 		this.valve = _valve;
+		this.reservoir = _reservoir;
 	}
+	
+	
 	
 	public char getTypeConfiture()
 	{
@@ -72,6 +76,8 @@ public class Bocal implements Runnable
 					this.valve.ChangerEtatValve();
 					System.out.println("Fin du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
 					this.valve.ChangerEtatValve();
+					this.reservoir.remplirPot();
+					System.out.println("Le volume de confiture dans le réservoir est de  " + this.reservoir.getVolume() + " de type " + this.type + ".");
 					this.isFull = true;
 					this.valve.changeNextBocal();
 				}
@@ -97,6 +103,8 @@ public class Bocal implements Runnable
 					System.out.println("Fin du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
 					this.valve.ChangerEtatValve();
 					this.isFull = true;
+					this.reservoir.remplirPot();
+					System.out.println("Le volume de confiture dans le réservoir est de  " + this.reservoir.getVolume() + " de type " + this.type + ".");
 					this.valve.changeNextBocal();
 				}
 			}
