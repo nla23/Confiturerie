@@ -20,6 +20,10 @@ public class Etiquettage
 	}
 	public int peekNextBocal()
 	{
+		if(this.queue.peekFirst() == null)
+		{
+			return -1;
+		}
 		return this.queue.peekFirst();
 	}
 	public void setNextBocal(final int _numero)

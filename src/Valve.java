@@ -13,7 +13,7 @@ public class Valve {
 		this.nbTypeB = _nbTypeB;
 		this.typePriorite = _typePriorite;
 	}
-	public void remplissage(final int _numero, final char _type) 
+	synchronized public void remplissage(final int _numero, final char _type) 
 	{
 		System.out.println("Debut du remplissage du bocal " + _numero + " de type " + _type + ".");
 		System.out.println("Valve ouverte.");
@@ -30,24 +30,24 @@ public class Valve {
 		}
 		this.checkPriority();
 	}
-	public int getCurrentBocal()
+	synchronized public int getCurrentBocal()
 	{
 		return this.currentBocal;
 	}
-	public void changeNextBocal(final int _numero)
+	synchronized public void changeNextBocal(final int _numero)
 	{
 		this.currentBocal = _numero;
 	}
-	public void setPriority(final char _type)
+	synchronized public void setPriority(final char _type)
 	{
 		this.typePriorite = _type;
 	}
-	public char getPriority()
+	synchronized public char getPriority()
 	{
 		return this.typePriorite;
 	}
 
-	public void checkPriority()
+	synchronized public void checkPriority()
 	{
 		if(nbTypeA == 0)
 		{
