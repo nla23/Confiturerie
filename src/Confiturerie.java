@@ -13,34 +13,36 @@ public class Confiturerie
 
 	public static void main(String[] args) 
 	{
+		Scanner reader = new Scanner(System.in);
 		Valve valveA = new Valve('A');
 		Valve valveB = new Valve('B');
+		char type_priorite;
 		Etiquettage etiquetteA = new Etiquettage('A');
 		Etiquettage etiquetteB = new Etiquettage('B');
 		Reservoir reservoirA = new Reservoir(5, 5,'A');
 		Reservoir reservoirB = new Reservoir(5, 5,'A');
 		
-		int nb_BocalA = askInput("Entrer le nombre de bocaux A:");
-		int nb_BocalB = askInput("Entrer le nombre de bocaux B:");
+		int nb_BocalA = askInputInt("Entrer le nombre de bocaux A:", reader);
+		int nb_BocalB = askInputInt("Entrer le nombre de bocaux B:", reader);
 	
 		// On n'accepte pas plus de 100 bocaux de n'importe quel type.
 		while ((nb_BocalA > 100) || (nb_BocalA < 1) || (nb_BocalB > 100) || (nb_BocalB < 1))
 		{
 			System.out.println("Le nombre de bocal de type A ou B doit etre inclus entre 1 et 100");
-			nb_BocalA = askInput("Entrer le nombre de bocaux A:");
-			nb_BocalB = askInput("Entrer le nombre de bocaux B:");
+			nb_BocalA = askInputInt("Entrer le nombre de bocaux A:", reader);
+			nb_BocalB = askInputInt("Entrer le nombre de bocaux B:", reader);
 		}
 		
 		Scanner scan_type=new Scanner(System.in);
-		System.out.println("Quel type doit-on traiter en priorite: (A, B)");
-		char type_priorite=scan_type.next().charAt(0);
+		type_priorite = askInputChar("Quel type doit-on traiter en priorite: (A, B)", reader);
+		
 		
 		// On s'assure que seul les types A et B sont acceptés.
 		while ((type_priorite != 'A') && (type_priorite != 'B'))
 		{
 			System.out.println("Seul les type A ou B sont acceptes (majuscules seulement)");
 			System.out.println("Quel type doit-on traiter en priorite: (A, B)");
-			type_priorite=scan_type.next().charAt(0);
+			type_priorite = askInputChar("Quel type doit-on traiter en priorite: (A, B)", reader);
 		}
 			
 		int i;
@@ -132,14 +134,22 @@ public class Confiturerie
 				i2++;
 			}
 		}
+		reader.close();
 	}
 	
-	public static int askInput(String _message) 
+	public static int askInputInt(String _message, Scanner _reader) 
 	{
 		//On passe en parametre le message en string et on retourne un int comme input de l'utilisateur
-		Scanner reader = new Scanner(System.in);
 		System.out.println(_message);
-		int n = reader.nextInt();
+		int n = _reader.nextInt();
 		return n;
 	}
+	public static char askInputChar(String _message, Scanner _reader)
+	{
+		//On passe en parametre le message en string et on retourne un int comme input de l'utilisateur
+		System.out.println(_message);
+		String n = _reader.next();
+		return n.charAt(0);
+	}
+	
 }
