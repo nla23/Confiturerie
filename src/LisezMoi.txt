@@ -1,0 +1,31 @@
+Equipe 1 - Projet Confiturerie - GLO-3004
+ 
+Auteurs:	Stéphane Lalancette	- 908 279 903    
+ 		Francis Charest    	- 905 179 619
+ 		Félix Veillette-Potvin 	- 111 074 805
+ 		Nicolas Lauzon		- 111 101 145
+
+Le manuel suivant explique le fonctionnement du programme Confiturerie qui a été mis au point par l'équipe numéro 1 dans le cadre du cours GLO-3004,
+Spécification Formelle et Vérification de Logiciel.  Le programme est écrit en Java et est concu pour etre exécuté avec le logiciel Eclipse Oxygen.2 Version (4.7.2)
+
+Les classes suivantes sont nécessaires pour l'exécution du programme:
+
+confiturerie.java:  	Cette classe contient le main() du programme. C'est également dans cette classe que sont créer les threads pour chacun des bocaux. 
+Etiquette.java:		Cette classe sert au processus d'étiquettage des bocaux.
+Reservoir.java:		Cette classe sert a configurer certains parametres pour les bocaux comme le volumee et la capacité.
+Bocal.java:		Cette classe contient les parametres spécifiques a chacun des bocaux comme son type (A/B) et son numéro. On se sert également de cette classe pour spécifier si le bocal est déja étiquetté et remplit.
+Valve.java:		Cette classe sert a configurer le type de la valve (A/B) et son statu (ouverte/fermée).  
+
+Pour exécuter le programme vous devez donc importer les 5 fichiers dans Eclipse et ensuite en faire la compilation. Nous avons aussi besoin que la classe java.util.Scanner soit importé pour que l'exécution fonctionne.
+
+Directives pour l'exécution:  
+ 
+1) Les bocaux sont obligatoirement de type A ou B.  
+2) L'utilisateur doit saisir le nombre de bocal de chaque type pour l'exécution; les valeurs permises sont de 1 a 100 bocaux.
+3) L'utilisateur doit choisir quel est le type de bocal qui doit etre traité en priorité; les valeurs permises sont A ou B. 
+4) Le système supporte un réservoir de 5 litres pour chaque type de confiture (5 de A et 5 de B); ce nombre ne peut etre modifié et est fixé dans le code source.
+5) Le remplissage de chaque pot de confiture diminue la volumétrie de 1 litre; le remplissage de 5 pots de confitures vide le réservoir qui est alors remplis automatiquement.
+
+
+  
+
