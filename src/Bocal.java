@@ -74,6 +74,12 @@ public class Bocal implements Runnable
 					this.valve.ChangerEtatValve();
 					System.out.println("Fin du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
 					this.valve.ChangerEtatValve();
+					if (this.reservoir.getVolume() == 0)
+					{
+						System.out.println("Le réservoir de type " + this.type + " est vide, ajout de 5 litres de confiture dans le réservoir.");
+						this.reservoir.setVolume(5); 
+						System.out.println("Le volume de confiture dans le réservoir de type " + this.type + " est de " + this.reservoir.getVolume() + " litre.");
+					}
 					this.reservoir.remplirPot();
 					System.out.println("Le volume de confiture dans le réservoir de type " + this.type + " est de " + this.reservoir.getVolume() + " litre.");
 					this.isFull = true;
@@ -109,9 +115,15 @@ public class Bocal implements Runnable
 					this.valve.ChangerEtatValve();
 					System.out.println("Fin du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
 					this.valve.ChangerEtatValve();
-					this.isFull = true;
+					if (this.reservoir.getVolume() == 0)
+					{
+						System.out.println("Le réservoir de type " + this.type + " est vide, ajout de 5 litres de confiture dans le réservoir.");
+						this.reservoir.setVolume(5); 
+						System.out.println("Le volume de confiture dans le réservoir de type " + this.type + " est de " + this.reservoir.getVolume() + " litre.");
+					}
 					this.reservoir.remplirPot();
 					System.out.println("Le volume de confiture dans le réservoir de type " + this.type + " est de " + this.reservoir.getVolume() + " litre.");
+					this.isFull = true;
 					this.valve.changeNextBocal();
 				}
 			}

@@ -18,22 +18,22 @@ public class Reservoir
 		this.type = _type;
 	}
 	
-	public void setType(final char _type) 
+	synchronized public void setType(final char _type) 
 	{
 		this.type = _type;
 	}
 	
-	public char getTypeConfiture() 
+	synchronized public char getTypeConfiture() 
 	{
 		return this.type;
 	}
 	
-	public void setCapacite(final int _capacite) 
+	synchronized public void setCapacite(final int _capacite) 
 	{
 		this.capacite = _capacite;
 	}
 	
-	public int getCapacite()
+	synchronized public int getCapacite()
 	{
 		return this.capacite;
 	}
