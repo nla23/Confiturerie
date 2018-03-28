@@ -12,22 +12,38 @@ public class Tapis implements Runnable  {
 	private char type;
 	private LinkedList<Bocal> listeBocaux;
 	private LinkedBlockingQueue<Valve> valvesDisponibles;
-	private ExecutorService executorService;
-	private CompletionService taskCompletionService;
-	private retourneurValve retourneur;
+	private LinkedBlockingQueue<Mecanisme> mecanismesDisponibles;
+	private ExecutorService executorServiceValve;
+	private CompletionService taskCompletionServiceValve;
+	private ExecutorService executorServiceMecanisme;
+	private CompletionService taskCompletionServiceMecanisme;
+	private retourneurValve retourneurValve;
+	private retourneurMecanisme retourneurMecanisme;
+	private LinkedBlockingQueue<Bocal> bocauxPleins;
 	//Classe qui permet de passer les bocaux en ordre de leur arrivée en demandant une valve au controleur de valve
-	public Tapis(char type, LinkedList<Bocal> listeBocaux,LinkedBlockingQueue<Valve> valvesDisponibles,LinkedBlockingQueue<Valve> valvesRetournes) {
+	public Tapis(char type, LinkedList<Bocal> listeBocaux,LinkedBlockingQueue<Valve> valvesDisponibles,LinkedBlockingQueue<Valve> valvesRetournes,LinkedBlockingQueue<Mecanisme> mecanismesDisponibles) {
 		this.type = type;
 		this.listeBocaux = listeBocaux;
 		this.valvesDisponibles = valvesDisponibles;
 		//Permet de faire une méthode "callback", ce qui veut dire que la méthode rappelle le taskcompletion lorsqu'elle termine son execution
-		executorService = Executors.newCachedThreadPool();
-		taskCompletionService = new ExecutorCompletionService(
-				executorService);
-		this.retourneur = new retourneurValve(valvesRetournes,taskCompletionService);
+		executorServiceValve = Executors.newCachedThreadPool();
+		taskCompletionServiceValve = new ExecutorCompletionService(
+				executorServiceValve);
+		this.bocauxPleins = new LinkedBlockingQueue<Bocal>();
+		this.retourneurValve = new retourneurValve(valvesRetournes,taskCompletionServiceValve,bocauxPleins);
+		executorServiceMecanisme = Executors.newCachedThreadPool();
+		taskCompletionServiceMecanisme = new ExecutorCompletionService(
+				executorServiceMecanisme);
+		this.retourneurMecanisme = new retourneurMecanisme(mecanismesDisponibles, taskCompletionServiceMecanisme);
+		this.mecanismesDisponibles = mecanismesDisponibles; 
+		Etiquetteur test = new Etiquetteur(bocauxPleins, mecanismesDisponibles);
+		Thread etiquetteur = new Thread(test);
+		etiquetteur.start();
+		Thread retourneurMecanismeThread = new Thread(retourneurMecanisme);
+		retourneurMecanismeThread.start();
 		//Le retourneur de valve est un thread qui attend les callbacks de remplissage de pots et remets les valves dans les valves disponibles du contrôleur de pots
-		Thread retourneurThread = new Thread(retourneur);
-		retourneurThread.start();
+		Thread retourneurValveThread = new Thread(retourneurValve);
+		retourneurValveThread.start();
 	}
 
 	@Override
@@ -42,7 +58,7 @@ public class Tapis implements Runnable  {
 				//On "submit" la tache de remplir le pot à une méthode qui callback lorsque c'est remplit.
 				//Lorsque c'est remplit, la classe retourneur de valve sera appelé et 
 				//remettra le pot dans la liste de valve disponible du controleur de valve
-				taskCompletionService.submit(bocalCourant);
+				taskCompletionServiceValve.submit(bocalCourant);
 
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block

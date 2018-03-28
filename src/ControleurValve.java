@@ -13,9 +13,13 @@ public class ControleurValve implements Runnable{
 	private int nombreUneSorteAffile;
 	private Vector<typesDisponibles> typesNonPrioritaires;
 	private LinkedBlockingQueue<Valve> _valvesDisponibles;
+	private int nombrePotsPrioritaires;
+	private int nombrePotsPrioritairesDejaPasse;
+	private int nombreTotalDePots;
+	private int nombrePotsNonPrioritairesDejaPasse;
 	
 	//Classe qui controle les valves qui sont donné aux tapis pour le remplissage
-	public ControleurValve(LinkedBlockingQueue<Valve> ressourcesValve, char typePrioritaire,int nombreMaxPrioritaireAffile,HashMap<typesDisponibles,LinkedBlockingQueue<Valve>> filesAttente) {
+	public ControleurValve(LinkedBlockingQueue<Valve> ressourcesValve, char typePrioritaire,int nombreMaxPrioritaireAffile,int nombreTotalPots,int nombrePotsPrioritaires,HashMap<typesDisponibles,LinkedBlockingQueue<Valve>> filesAttente) {
 		this._valvesDisponibles = ressourcesValve;
 		this.typePrioritaire = typePrioritaire;		
 		this.filesAttente = new HashMap<typesDisponibles,LinkedBlockingQueue<Valve>>();
@@ -27,6 +31,9 @@ public class ControleurValve implements Runnable{
 				typesNonPrioritaires.add(type);
 			}
 		}
+		this.nombreTotalDePots = nombreTotalPots;
+		this.nombrePotsPrioritairesDejaPasse = 0;
+		this.nombrePotsPrioritaires = nombrePotsPrioritaires;
 		this.nombreUneSorteAffile = nombreMaxPrioritaireAffile;
 		this.nombreDePrioritaireObtenusValve = 0;
 		this.nombreDeNonprioritaireObtenusValve = 0;
@@ -46,8 +53,10 @@ public class ControleurValve implements Runnable{
 
 	//Permet de déterminer s'il y a eu suffisamment du type prioritaire de bocal de passé. Si oui on change de type
 	private synchronized typesDisponibles determinerTour() {
-		if(nombreDePrioritaireObtenusValve <= nombreUneSorteAffile) {
+		int nombrePotsNonPrioritairesRestant = nombreTotalDePots - nombrePotsPrioritaires -nombrePotsNonPrioritairesDejaPasse;
+		if((nombreDePrioritaireObtenusValve <= nombreUneSorteAffile && nombrePotsPrioritairesDejaPasse < nombrePotsPrioritaires) ||  nombrePotsNonPrioritairesRestant == 0) {
 			nombreDePrioritaireObtenusValve++;
+			nombrePotsPrioritairesDejaPasse++;
 			return compareCharToEnum(typePrioritaire);
 		}
 		else if(nombreDeNonprioritaireObtenusValve >= nombreUneSorteAffile ) {
@@ -57,6 +66,7 @@ public class ControleurValve implements Runnable{
 		}
 		else {
 			nombreDeNonprioritaireObtenusValve++;
+			nombrePotsNonPrioritairesDejaPasse++;
 			return typesNonPrioritaires.get(0);
 		}		
 	}
