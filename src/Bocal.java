@@ -29,8 +29,6 @@ public class Bocal implements Runnable
 		this.reservoir = _reservoir;
 	}
 	
-	
-	
 	public char getTypeConfiture()
 	{
 		return this.type;
@@ -91,9 +89,18 @@ public class Bocal implements Runnable
 		}
 			
 		if (this.type_priorite != this.type)
-		// Il faudrait que les threads du type non-prioritaire soit en wait le temps que ceux du type 
-		// prioritaire ait tous passe. Si quelqu'un a une idee de comment on pourrait faire.
+		
+		// On met les threads du type non prioritaire en sleep car on veut s'assurer que tous les thread de l'autre type passent.
+		{
+			try 
 			{
+				System.out.println("Le bocal " + this.bocalNumero + " de type " + this.type + " est en attente.");
+				Thread.sleep(1000);
+			} catch (InterruptedException erreur) 
+			{
+				erreur.printStackTrace();
+			}
+		
 			while(!isFull && !isLabel)
 			{
 				if(this.bocalNumero == this.valve.getNextBocal())
@@ -118,6 +125,5 @@ public class Bocal implements Runnable
 		}
 		
 		System.out.println("Le bocal " + this.bocalNumero + " de type " + this.type + " est termine.");
-	
 	}
 }
