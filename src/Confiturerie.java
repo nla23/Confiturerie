@@ -1,4 +1,7 @@
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Scanner;
+import java.util.Vector;
 /*
  * Equipe 1 - Projet Confiturerie - GLO-3003
  * 
@@ -7,21 +10,27 @@ import java.util.Scanner;
  * Felix Veillette-Potvin 	- 111 074 805
  * Nicolas Lauzon			- 111 101 145
  */
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Confiturerie 
 {
 
 	public static void main(String[] args) 
 	{
-		Valve valveA = new Valve('A');
-		Valve valveB = new Valve('B');
+		//Valve valveA = new Valve('A');
+		//Valve valveB = new Valve('B');
+		int nombreValve = 10;
+		int nombreMaxPrioritaireAffile = 5;
+		Vector<Valve> ressources = new Vector<Valve>(nombreValve);
 		Etiquettage etiquetteA = new Etiquettage('A');
 		Etiquettage etiquetteB = new Etiquettage('B');
 		Reservoir reservoirA = new Reservoir(5, 5,'A');
-		Reservoir reservoirB = new Reservoir(5, 5,'A');
+		Reservoir reservoirB = new Reservoir(5, 5,'B');
 		
 		int nb_BocalA = askInput("Entrer le nombre de bocaux A:");
 		int nb_BocalB = askInput("Entrer le nombre de bocaux B:");
+		
+
 	
 		// On n'accepte pas plus de 100 bocaux de n'importe quel type.
 		while ((nb_BocalA > 100) || (nb_BocalA < 1) || (nb_BocalB > 100) || (nb_BocalB < 1))
@@ -42,10 +51,50 @@ public class Confiturerie
 			System.out.println("Quel type doit-on traiter en priorite: (A, B)");
 			type_priorite=scan_type.next().charAt(0);
 		}
-			
+		
+
 		int i;
-		Bocal[] bocauxA = new Bocal[nb_BocalA];
-		Bocal[] bocauxB = new Bocal[nb_BocalB];
+		LinkedList<Bocal> bocauxA = new LinkedList<Bocal>();
+		LinkedList<Bocal> bocauxB = new LinkedList<Bocal>();
+		for(i = 0 ; i < nb_BocalA ; i++) {
+			Bocal nouveauBocal = new Bocal('A');
+			nouveauBocal.setNumero(i);
+			bocauxA.add(nouveauBocal);
+		}
+		for(i = 0; i < nb_BocalB;i++) {
+			Bocal nouveauBocal = new Bocal('B');
+			nouveauBocal.setNumero(i);
+			bocauxB.add(nouveauBocal);
+		}
+		
+		HashMap<typesDisponibles,LinkedBlockingQueue<Valve>> filesAttente = new HashMap<typesDisponibles,LinkedBlockingQueue<Valve>>();
+		//for(typesDisponibles type : typesDisponibles.values()) {
+		LinkedBlockingQueue<Valve> valvesDisponibles = new LinkedBlockingQueue<Valve>();
+		for(i = 0 ; i < nombreValve ; i++) {
+			try {
+				valvesDisponibles.put(new Valve(i));
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+			//Création d'une linkedblockingqueue par type de bocal, ces files sont partagés avec le controleur
+			//À chaque fois que le contrôleurValve insère une valve, le tapis est réveillé et peur remplir un pot
+			LinkedBlockingQueue<Valve> fileA = new LinkedBlockingQueue<Valve>();
+			filesAttente.put(typesDisponibles.A, fileA);
+			Tapis nouveauTapisA = new Tapis('A', bocauxA, fileA,valvesDisponibles);
+			Thread tapisCourantA = new Thread(nouveauTapisA);
+			tapisCourantA.start();
+			LinkedBlockingQueue<Valve> fileB = new LinkedBlockingQueue<Valve>();
+			filesAttente.put(typesDisponibles.B, fileB);
+			Tapis nouveauTapisB = new Tapis('B', bocauxB, fileB,valvesDisponibles);
+			Thread tapisCourantB = new Thread(nouveauTapisB);
+			tapisCourantB.start();
+
+		//}
+		ControleurValve controleur = new ControleurValve(valvesDisponibles, type_priorite, nombreMaxPrioritaireAffile, filesAttente);
+		Thread controleurThread = new Thread(controleur);
+		controleurThread.start();
 		
 		// On verifie l'ecart dans le nombre de bocaux A par rapport au nombre de bocaux B,  
 		// car nous voulons creer par alternance les A et les B jusqu'a ce que le 
@@ -58,18 +107,19 @@ public class Confiturerie
 		// Cas 1: Plus de A que de B: On commence donc par alternance et on finit par faire les A restants (A, B, A, B, A, A ... A).
 		// Cas 2: On a le meme nombre de A que de B. On les fait tous par alternance tout simplement (A, B, A, B, ... A, B)
 	
-		if (nb_BocalA >= nb_BocalB)
+		/*if (nb_BocalA >= nb_BocalB)
 		{
 			for (i = 0; i < nb_BocalB; i++)
 			{
-				System.out.println("Creation Bocal " + i + " de type A");
+				
+				//System.out.println("Creation Bocal " + i + " de type A");
 				bocauxA[i] = new Bocal('A',etiquetteA,valveA,reservoirA);
 				bocauxA[i].setNumero(i);
 				bocauxA[i].setTypePriorite(type_priorite);
 				Thread newThreadA = new Thread(bocauxA[i]);
 				newThreadA.start();
 			
-				System.out.println("Creation Bocal " + i + " de type B");
+				//System.out.println("Creation Bocal " + i + " de type B");
 				bocauxB[i] = new Bocal('B',etiquetteB,valveB,reservoirB);
 				bocauxB[i].setNumero(i);
 				bocauxB[i].setTypePriorite(type_priorite);
@@ -131,7 +181,7 @@ public class Confiturerie
 				newThreadB.start();
 				i2++;
 			}
-		}
+		}*/
 	}
 	
 	public static int askInput(String _message) 

@@ -1,6 +1,7 @@
 import java.util.Scanner;
+import java.util.concurrent.Callable;
 
-public class Bocal implements Runnable 
+public class Bocal implements Callable 
 {
 	private int bocalNumero; //Numero du bocal, le plus petit nombre étant le premier
 	private char type;
@@ -29,6 +30,8 @@ public class Bocal implements Runnable
 		this.reservoir = _reservoir;
 	}
 	
+	
+	
 	public char getTypeConfiture()
 	{
 		return this.type;
@@ -55,10 +58,10 @@ public class Bocal implements Runnable
 		return bocalNumero;
 	}
 	
-	@Override
+	
 	
 	//Exécution du thread à insérer ici
-	public void run()	
+	/*public void run()	
 	{		
 			
 		// On passe le type prioritaire en premier sur le tapis (a ou b). 
@@ -68,8 +71,7 @@ public class Bocal implements Runnable
 			while(!isFull && !isLabel)
 			{
 				if(this.bocalNumero == this.valve.getNextBocal())
-				{
-								
+				{								
 					System.out.println("Debut du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
 					this.valve.ChangerEtatValve();
 					System.out.println("Fin du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
@@ -89,18 +91,7 @@ public class Bocal implements Runnable
 		}
 			
 		if (this.type_priorite != this.type)
-		
-		// On met les threads du type non prioritaire en sleep car on veut s'assurer que tous les thread de l'autre type passent.
-		{
-			try 
 			{
-				System.out.println("Le bocal " + this.bocalNumero + " de type " + this.type + " est en attente.");
-				Thread.sleep(1000);
-			} catch (InterruptedException erreur) 
-			{
-				erreur.printStackTrace();
-			}
-		
 			while(!isFull && !isLabel)
 			{
 				if(this.bocalNumero == this.valve.getNextBocal())
@@ -125,5 +116,34 @@ public class Bocal implements Runnable
 		}
 		
 		System.out.println("Le bocal " + this.bocalNumero + " de type " + this.type + " est termine.");
+	
+	}*/
+
+	public void remplir(Valve valveDisponible) {
+		System.out.println("Le bocal " + this.bocalNumero + " de type " + this.getTypeConfiture() + " a obtenu la valve" + valveDisponible.getIdentifiantValve());
+		System.out.println("Debut du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
+		valveDisponible.ChangerEtatValve();
+		try {
+			//Simule un temps de remplissage
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Fin du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
+		valveDisponible.ChangerEtatValve();
+		this.isFull = true;
+	}
+	public synchronized void setAuthorizedValve(Valve v) {
+		this.valve = v;
+	}
+
+	@Override
+	public Valve call() throws Exception {
+		// TODO Auto-generated method stub
+		Valve valveDonne = valve;
+		remplir(valveDonne);
+		//valve = null;
+		return valveDonne;
 	}
 }
