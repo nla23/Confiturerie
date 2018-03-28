@@ -11,6 +11,7 @@ public class Bocal implements Callable
 	private boolean isFull = false;
 	private boolean isLabel = false;
 	private Reservoir reservoir;
+	private Mecanisme mecanisme;
 	
 	enum TypeDeConfiture 
 	{
@@ -137,13 +138,41 @@ public class Bocal implements Callable
 	public synchronized void setAuthorizedValve(Valve v) {
 		this.valve = v;
 	}
+	public synchronized Valve getAuthorizedValve() {
+		return valve;
+	}
+	public synchronized void setAuthorizedMechanisme(Mecanisme m) {
+		this.mecanisme = m;
+	}
+	public synchronized Mecanisme getAuthorizedMecanisme() {
+		return mecanisme;
+	}
+	public void etiqueter(Mecanisme mecanismeDisponible) {
+		System.out.println("Le bocal " + this.bocalNumero + " de type " + this.getTypeConfiture() + " a obtenu le mecanisme" + mecanismeDisponible.getIdentifiantMecanisme());
+		System.out.println("Debut de l'etiquetage du bocal " + this.bocalNumero + " de type " + this.type + ".");
+		mecanismeDisponible.ChangerEtatMecanisme();
+		try {
+			//Simule un temps de remplissage
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Fin de l'etiquetage du bocal " + this.bocalNumero + " de type " + this.type + ".");
+		mecanismeDisponible.ChangerEtatMecanisme();
+		this.isLabel = true;
+	}
 
 	@Override
-	public Valve call() throws Exception {
-		// TODO Auto-generated method stub
-		Valve valveDonne = valve;
-		remplir(valveDonne);
-		//valve = null;
-		return valveDonne;
+	public Bocal call() throws Exception {
+		if(!this.isFull) {		
+			Valve valveDonne = valve;
+			remplir(valveDonne);
+		}
+		if(!this.isLabel) {
+			etiqueter(mecanisme);
+		}
+		Bocal copy = new Boca
+		return this;
 	}
 }
