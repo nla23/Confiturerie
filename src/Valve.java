@@ -14,7 +14,7 @@ public class Valve
 		if(this.ouvert)
 		{
 			this.ouvert = false;
-			System.out.println("Valve " + this.typeValve + " fermer.");
+			System.out.println("Valve " + this.typeValve + " fermée.");
 		}
 		else
 		{

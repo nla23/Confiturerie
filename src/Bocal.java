@@ -70,12 +70,12 @@ public class Bocal implements Runnable
 				if(this.bocalNumero == this.valve.getNextBocal())
 				{
 								
-					System.out.println("Debut du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
+					System.out.println("Début du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
 					this.valve.ChangerEtatValve();
 					System.out.println("Fin du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
 					this.valve.ChangerEtatValve();
 					this.reservoir.remplirPot();
-					System.out.println("Le volume de confiture dans le réservoir est de  " + this.reservoir.getVolume() + " de type " + this.type + ".");
+					System.out.println("Le volume de confiture dans le réservoir de type " + this.type + " est de " + this.reservoir.getVolume() + " litre.");
 					this.isFull = true;
 					this.valve.changeNextBocal();
 				}
@@ -105,13 +105,13 @@ public class Bocal implements Runnable
 			{
 				if(this.bocalNumero == this.valve.getNextBocal())
 				{
-					System.out.println("Debut du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
+					System.out.println("Début du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
 					this.valve.ChangerEtatValve();
 					System.out.println("Fin du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
 					this.valve.ChangerEtatValve();
 					this.isFull = true;
 					this.reservoir.remplirPot();
-					System.out.println("Le volume de confiture dans le réservoir est de  " + this.reservoir.getVolume() + " de type " + this.type + ".");
+					System.out.println("Le volume de confiture dans le réservoir de type " + this.type + " est de " + this.reservoir.getVolume() + " litre.");
 					this.valve.changeNextBocal();
 				}
 			}
@@ -124,6 +124,6 @@ public class Bocal implements Runnable
 	
 		}
 		
-		System.out.println("Le bocal " + this.bocalNumero + " de type " + this.type + " est termine.");
+		System.out.println("Le bocal " + this.bocalNumero + " de type " + this.type + " est terminé.");
 	}
 }
