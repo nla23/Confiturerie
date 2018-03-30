@@ -1,31 +1,37 @@
+import java.util.HashMap;
 
 public class Valve
 {
 
 	private boolean ouvert = false; //False = fermé, true = ouvert
-	private char typeValve;
 	private int identifiantValve;
 	private int nextBocal = 0;
-	public Valve(int identifiantValve)
+	private HashMap<typesDisponibles,Reservoir> reservoirs;
+	public Valve(int identifiantValve,HashMap<typesDisponibles,Reservoir> reservoirs)
 	{
-		//this.typeValve = _type;
 		this.identifiantValve = identifiantValve;
+		this.reservoirs = reservoirs;		
 	}
 	public int getIdentifiantValve() {
 		return identifiantValve;
 	}
-	public synchronized void ChangerEtatValve() // Change l'état de la valve
-	{
-		if(this.ouvert)
-		{
-			this.ouvert = false;
-			System.out.println("Valve " + this.typeValve + " fermer.");
+	public synchronized void Consommer(typesDisponibles typeConfiture)
+	{	
+		this.ouvert =true;
+		System.out.println("Valve ouverte.");
+		try {
+			Thread.sleep(1000);
+			Reservoir reservoirConfiture = reservoirs.get(typeConfiture);
+			reservoirConfiture.consommerConfiture();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		else
-		{
-			this.ouvert = true;
-			System.out.println("Valve " + this.typeValve + " ouverte."); 
-		}
+		this.ouvert = false;
+		System.out.println("Valve fermée.");
+	}
+	public boolean isOpened() {
+		return this.ouvert;
 	}
 	synchronized public int getNextBocal()
 	{

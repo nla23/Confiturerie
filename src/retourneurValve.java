@@ -14,7 +14,6 @@ public class retourneurValve implements Runnable {
 	
 	//Classe qui permet d'avoir un thread qui attend les remplissages de pots et remet dans la liste de pots disponibles du controleur de valve
 	public retourneurValve(LinkedBlockingQueue<Valve> valvesDisponibles, CompletionService taskCompletionService, LinkedBlockingQueue<Bocal> bocauxPleins) {
-		executorService = Executors.newCachedThreadPool();
 		this.taskCompletionService = taskCompletionService;
 		this.valvesDisponibles = valvesDisponibles;
 		this.bocauxPleins = bocauxPleins;
@@ -26,15 +25,15 @@ public class retourneurValve implements Runnable {
 				//À chaque fois qu'une méthode termine, le taskCompletionService se fait 
 				//notify et il prend la valves disponible et la remet dans la file du controleur
 				Future<Bocal> valveUtilisee = taskCompletionService.take();
-				Bocal bocalCourant= valveUtilisee.get();
+				Bocal bocalCourant = valveUtilisee.get();
+				//Met le bocal dans la file des bocaux pleins pour lancer le processus d'etiquettage
 				bocauxPleins.put(bocalCourant);
+				//Remet la valve dans la file du controleur de valve
 				valvesDisponibles.put(bocalCourant.getValve());				
 			}
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

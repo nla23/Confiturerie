@@ -8,54 +8,35 @@ public class Reservoir
 	enum TypeDeConfiture 
 	{
 		A,B;
-	}
+	}	
 	
-	
-	public Reservoir(final int _capacite, final int _volume, final char _type)
+	public Reservoir(final int _capacite, final char _type)
 	{
 		this.capacite = _capacite;
-		this.volume= _volume;
+		this.volume= capacite;
 		this.type = _type;
 	}
-	
-	public void setType(final char _type) 
-	{
-		this.type = _type;
+	public synchronized void consommerConfiture() {
+		if(this.volume >= 0 ) {
+			System.out.println("Consommation de confiture");
+			volume--;
+		}
+		else {
+			System.out.println("Remplissage du réservoir pour le type " + type);
+			for(int i = 0; i <= capacite; i++) {
+				try {
+					Thread.sleep(1000);
+					volume++;
+					System.out.println(this.volume + "L de remplis...");					
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}				
+			}
+		}
 	}
+
 	
-	public char getTypeConfiture() 
-	{
-		return this.type;
-	}
-	
-	public void setCapacite(final int _capacite) 
-	{
-		this.capacite = _capacite;
-	}
-	
-	public int getCapacite()
-	{
-		return this.capacite;
-	}
-	
-	synchronized public void setVolume(final int _volume) 
-	{
-		this.volume = _volume;
-	}
-	
-	synchronized public int getVolume() 
-	{
-		return this.volume;
-	}
-	
-	synchronized public void remplirPot()
-	{
-		 this.volume--;
-	}
-	
-	synchronized public void approvisionnement(final int _volume)
-	{
-		this.volume = _volume;
-	}
+
 	
 }

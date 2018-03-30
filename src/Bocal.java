@@ -121,19 +121,14 @@ public class Bocal implements Callable
 	}*/
 
 	public void remplir(Valve valveDisponible) {
-		System.out.println("Le bocal " + this.bocalNumero + " de type " + this.getTypeConfiture() + " a obtenu la valve" + valveDisponible.getIdentifiantValve());
+		System.out.println("Le bocal " + this.bocalNumero + " de type " + this.getTypeConfiture() + " a obtenu la valve " + valveDisponible.getIdentifiantValve());
 		System.out.println("Debut du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
-		valveDisponible.ChangerEtatValve();
-		try {
-			//Simule un temps de remplissage
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		//Appel de la méthode consommer de la confiture sur la valve.
+		valveDisponible.Consommer(Utils.compareCharToEnum(type));
+		//Tant que la valve est ouverte, le pot se fait remplir
+		while(valveDisponible.isOpened());
 		System.out.println("Fin du remplissage du bocal " + this.bocalNumero + " de type " + this.type + ".");
-		valveDisponible.ChangerEtatValve();
-		this.isFull = true;
+		isFull = true;
 	}
 	public synchronized void setAuthorizedValve(Valve v) {
 		this.valve = v;
@@ -148,7 +143,7 @@ public class Bocal implements Callable
 		return mecanisme;
 	}
 	public void etiqueter(Mecanisme mecanismeDisponible) {
-		System.out.println("Le bocal " + this.bocalNumero + " de type " + this.getTypeConfiture() + " a obtenu le mecanisme" + mecanismeDisponible.getIdentifiantMecanisme());
+		System.out.println("Le bocal " + this.bocalNumero + " de type " + this.getTypeConfiture() + " a obtenu le mecanisme " + mecanismeDisponible.getIdentifiantMecanisme());
 		System.out.println("Debut de l'etiquetage du bocal " + this.bocalNumero + " de type " + this.type + ".");
 		mecanismeDisponible.ChangerEtatMecanisme();
 		try {
@@ -188,8 +183,7 @@ public class Bocal implements Callable
 		else if(!this.isLabel) {
 			Mecanisme mecanismeDonne = mecanisme;
 			etiqueter(mecanismeDonne);
-		}
-		
+		}		
 		return this;
 	}
 }

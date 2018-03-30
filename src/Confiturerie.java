@@ -17,23 +17,17 @@ public class Confiturerie
 
 	public static void main(String[] args) 
 	{
-		//Valve valveA = new Valve('A');
-		//Valve valveB = new Valve('B');
 		int nombreValve = 2;
 		int nombreMecanisme = 2;
 		int nombreMaxPrioritaireAffile = 5;
-		Vector<Valve> ressourcesValve = new Vector<Valve>(nombreValve);
-		Vector<Mecanisme> ressourcesMecanisme = new Vector<Mecanisme>(nombreMecanisme);
-		Etiquettage etiquetteA = new Etiquettage('A');
-		Etiquettage etiquetteB = new Etiquettage('B');
-		Reservoir reservoirA = new Reservoir(5, 5,'A');
-		Reservoir reservoirB = new Reservoir(5, 5,'B');
-		
+		Reservoir reservoirA = new Reservoir(5,'A');
+		Reservoir reservoirB = new Reservoir(5,'B');
+		HashMap <typesDisponibles,Reservoir> reservoirs = new HashMap<typesDisponibles,Reservoir>();
+		reservoirs.put(typesDisponibles.A, reservoirA);
+		reservoirs.put(typesDisponibles.B,reservoirB);
 		int nb_BocalA = askInput("Entrer le nombre de bocaux A:");
 		int nb_BocalB = askInput("Entrer le nombre de bocaux B:");
-		
 
-	
 		// On n'accepte pas plus de 100 bocaux de n'importe quel type.
 		while ((nb_BocalA > 100) || (nb_BocalA < 1) || (nb_BocalB > 100) || (nb_BocalB < 1))
 		{
@@ -41,11 +35,11 @@ public class Confiturerie
 			nb_BocalA = askInput("Entrer le nombre de bocaux A:");
 			nb_BocalB = askInput("Entrer le nombre de bocaux B:");
 		}
-		
+
 		Scanner scan_type=new Scanner(System.in);
 		System.out.println("Quel type doit-on traiter en priorite: (A, B)");
 		char type_priorite=scan_type.next().charAt(0);
-		
+
 		// On s'assure que seul les types A et B sont acceptés.
 		while ((type_priorite != 'A') && (type_priorite != 'B'))
 		{
@@ -53,9 +47,11 @@ public class Confiturerie
 			System.out.println("Quel type doit-on traiter en priorite: (A, B)");
 			type_priorite=scan_type.next().charAt(0);
 		}
-		
+
 
 		int i;
+		//Création des objets bocal avec le numéro et le type correspondant
+		//Ces objets sont envoyés au tapis pour être remplis et étiquetter
 		LinkedList<Bocal> bocauxA = new LinkedList<Bocal>();
 		LinkedList<Bocal> bocauxB = new LinkedList<Bocal>();
 		for(i = 0 ; i < nb_BocalA ; i++) {
@@ -68,18 +64,24 @@ public class Confiturerie
 			nouveauBocal.setNumero(i);
 			bocauxB.add(nouveauBocal);
 		}
-		
+		//Création des files d'attentes qui correspondent aux valves disponibles pour chaque type
+		//À chaque fois qu'une valve est disponible, le contrôleur determine quel type doit obtenir la valve et le place dans la bonne file
+		//pour permettre au prochain bocal de ce type à etre remplis
 		HashMap<typesDisponibles,LinkedBlockingQueue<Valve>> filesAttente = new HashMap<typesDisponibles,LinkedBlockingQueue<Valve>>();
-		//for(typesDisponibles type : typesDisponibles.values()) {
+
+		//Création de toutes les valves du système. Ces valves sont toutes les valves auxquelles le contrôleur a accès.
+		//À chaque fois qu'une valve est placé(ou replacé par le retourneurValve), elle est retourné dans une des files crée plus haut pour être consommé
+		//par le bon type de bocal.
 		LinkedBlockingQueue<Valve> valvesDisponibles = new LinkedBlockingQueue<Valve>();
 		for(i = 0 ; i < nombreValve ; i++) {
 			try {
-				valvesDisponibles.put(new Valve(i));
+				valvesDisponibles.put(new Valve(i,reservoirs));
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		//Les mécanismes suivent exactement le même processus que les valves.
 		LinkedBlockingQueue<Mecanisme> mecanismesDisponibles = new LinkedBlockingQueue<Mecanisme>();
 		for(i = 0 ; i < nombreMecanisme ; i++) {
 			try {
@@ -89,132 +91,50 @@ public class Confiturerie
 				e.printStackTrace();
 			}
 		}
-			//Création d'une linkedblockingqueue par type de bocal, ces files sont partagés avec le controleur
-			//À chaque fois que le contrôleurValve insère une valve, le tapis est réveillé et peur remplir un pot
-			LinkedBlockingQueue<Valve> fileA = new LinkedBlockingQueue<Valve>();
-			filesAttente.put(typesDisponibles.A, fileA);
-			Tapis nouveauTapisA = new Tapis('A', bocauxA, fileA,valvesDisponibles,mecanismesDisponibles);
-			Thread tapisCourantA = new Thread(nouveauTapisA);
-			tapisCourantA.start();
-			LinkedBlockingQueue<Valve> fileB = new LinkedBlockingQueue<Valve>();
-			filesAttente.put(typesDisponibles.B, fileB);
-			Tapis nouveauTapisB = new Tapis('B', bocauxB, fileB,valvesDisponibles,mecanismesDisponibles);
-			Thread tapisCourantB = new Thread(nouveauTapisB);
-			tapisCourantB.start();
-
-		//}
-			int nombrePotsPrioritaires;
-			if(type_priorite == 'A') {
-				nombrePotsPrioritaires = nb_BocalA;
-			}
-			else {
-				nombrePotsPrioritaires = nb_BocalB;
-			}
-			int nombreTotalPots = nb_BocalA+nb_BocalB;
-
+		//Création d'une linkedblockingqueue par type de bocal, ces files sont partagés avec le controleur
+		//À chaque fois que le contrôleurValve insère une valve, le tapis est réveillé et peut remplir un pot
+		LinkedBlockingQueue<Valve> fileAvalve = new LinkedBlockingQueue<Valve>();
+		filesAttente.put(typesDisponibles.A, fileAvalve);
+		LinkedBlockingQueue<Valve> fileBvalve = new LinkedBlockingQueue<Valve>();
+		filesAttente.put(typesDisponibles.B, fileBvalve);
+		
+		//On détermine le nombre de pots prioritaires, permettant l'altenrnace entre les types sans causer de famine
+		int nombrePotsPrioritaires;
+		if(type_priorite == 'A') {
+			nombrePotsPrioritaires = nb_BocalA;
+		}
+		else {
+			nombrePotsPrioritaires = nb_BocalB;
+		}
+		//Le nombre total de pots dans le système
+		int nombreTotalPots = nb_BocalA+nb_BocalB;
+		
+		//Création du contrôleur de valve qui permet de déterminer quel type de bocal doit obtenir une valve.
+		//À chaque fois qu'une valve est disponible, le controleur l'insère dans la file de valve du type approprié
 		ControleurValve controleurValve = new ControleurValve(valvesDisponibles, type_priorite,nombreMaxPrioritaireAffile,nombreTotalPots,nombrePotsPrioritaires,  filesAttente);
 		Thread controleurThread = new Thread(controleurValve);
 		controleurThread.start();
-
-
-		//filesAttente.put(typesDisponibles.A, fileA);
+		
+		//Création des files attentes des mécanismes, suivant le même processus que les valves
 		HashMap<typesDisponibles,LinkedBlockingQueue<Mecanisme>> filesAttenteMecanismes = new HashMap<typesDisponibles,LinkedBlockingQueue<Mecanisme>>();
 		LinkedBlockingQueue<Mecanisme> fileAmecanisme = new LinkedBlockingQueue<Mecanisme>();
 		filesAttenteMecanismes.put(typesDisponibles.A, fileAmecanisme);
-
 		LinkedBlockingQueue<Mecanisme> fileBmecanisme = new LinkedBlockingQueue<Mecanisme>();
 		filesAttenteMecanismes.put(typesDisponibles.B, fileBmecanisme);
-		ControleurMecanisme controleurMecanisme = new ControleurMecanisme(mecanismesDisponibles, type_priorite, nombrePotsPrioritaires, filesAttenteMecanismes);
+		ControleurMecanisme controleurMecanisme = new ControleurMecanisme(mecanismesDisponibles, type_priorite,nombreMaxPrioritaireAffile,nombreTotalPots, nombrePotsPrioritaires, filesAttenteMecanismes);
 		Thread controleurMecanismeThread = new Thread(controleurMecanisme);
 		controleurMecanismeThread.start();
-		// On verifie l'ecart dans le nombre de bocaux A par rapport au nombre de bocaux B,  
-		// car nous voulons creer par alternance les A et les B jusqu'a ce que le 
-		// plus petit nombre parmis les 2 type de bocaux soit atteint et ensuite on cree les derniers bocaux du type manquant
-		// Ex:  Si on a 4 Type A et 2 Type B;  On va les creer dans cet ordre (A, B, A, B, A, A)
 		
-		int ecart_type = Math.abs(nb_BocalA - nb_BocalB);
-		
-		// Traitement dans ce if du cas 1 et 2: On a soit plus de BocauxA que de BocauxB ou le nombre est egal.
-		// Cas 1: Plus de A que de B: On commence donc par alternance et on finit par faire les A restants (A, B, A, B, A, A ... A).
-		// Cas 2: On a le meme nombre de A que de B. On les fait tous par alternance tout simplement (A, B, A, B, ... A, B)
-	
-		/*if (nb_BocalA >= nb_BocalB)
-		{
-			for (i = 0; i < nb_BocalB; i++)
-			{
-				
-				//System.out.println("Creation Bocal " + i + " de type A");
-				bocauxA[i] = new Bocal('A',etiquetteA,valveA,reservoirA);
-				bocauxA[i].setNumero(i);
-				bocauxA[i].setTypePriorite(type_priorite);
-				Thread newThreadA = new Thread(bocauxA[i]);
-				newThreadA.start();
-			
-				//System.out.println("Creation Bocal " + i + " de type B");
-				bocauxB[i] = new Bocal('B',etiquetteB,valveB,reservoirB);
-				bocauxB[i].setNumero(i);
-				bocauxB[i].setTypePriorite(type_priorite);
-				Thread newThreadB = new Thread(bocauxB[i]);
-				newThreadB.start();
-			}
-			
-			// Creation des Bocaux A manquants, car on a plus de Bocaux A que de Bocaux B.
-			if (nb_BocalA > nb_BocalB)
-			{
-				// i2 sert a garder le bon numero d'index dans le tableau.
-				int i2 = i;
-				
-				for (i = 0; i < ecart_type; i++)
-				{
-					System.out.println("Creation Bocal " + i2 + " de type A");
-					bocauxA[i2] = new Bocal('A',etiquetteA,valveA,reservoirA);
-					bocauxA[i2].setNumero(i2);
-					bocauxA[i2].setTypePriorite(type_priorite);
-					Thread newThreadA = new Thread(bocauxA[i2]);
-					newThreadA.start();
-					i2++;
-				}
-			}
-		}
-				
-		// Cas 3: Plus de B que de A: On commence donc par alternance et on finit par faire les B restants (A, B, A, B, B, ... B).
-		if (nb_BocalA < nb_BocalB)
-		{
-			for (i = 0; i < nb_BocalA; i++)
-			{
-				System.out.println("Creation Bocal " + i + " de type A");
-				bocauxA[i] = new Bocal('A',etiquetteA,valveA,reservoirA);
-				bocauxA[i].setNumero(i);
-				bocauxA[i].setTypePriorite(type_priorite);
-				Thread newThreadA = new Thread(bocauxA[i]);
-				newThreadA.start();
-			
-				System.out.println("Creation Bocal " + i + " de type B");
-				bocauxB[i] = new Bocal('B',etiquetteB,valveB,reservoirB);
-				bocauxB[i].setNumero(i);
-				bocauxB[i].setTypePriorite(type_priorite);
-				Thread newThreadB = new Thread(bocauxB[i]);
-				newThreadB.start();
-			}
-			
-			// i2 sert a garder le bon numero d'index dans le tableau..
-			int i2 = i;
-			
-			// Creation des B restants, car on a plus de B que A.
-			for (i = 0; i < ecart_type; i++)
-			{
-			
-				System.out.println("Creation Bocal " + i2 + " de type B");
-				bocauxB[i2] = new Bocal('B',etiquetteB,valveB, reservoirB);
-				bocauxB[i2].setNumero(i2);
-				bocauxB[i2].setTypePriorite(type_priorite);
-				Thread newThreadB = new Thread(bocauxB[i2]);
-				newThreadB.start();
-				i2++;
-			}
-		}*/
+		//Création des tapis pour chaque type de bocal. Ces tapis attendent d'avoir une valve dans leur file d'attente respective
+		//et remplissent le bocal lorsqu'il y en a une de disponible. Ces threads s'executent jusqu'à ce qu'il n'y ait plus de bocal dans la 
+		Tapis nouveauTapisB = new Tapis('B', bocauxB, fileBvalve,valvesDisponibles,mecanismesDisponibles,fileBmecanisme);
+		Thread tapisCourantB = new Thread(nouveauTapisB);
+		tapisCourantB.start();
+		Tapis nouveauTapisA = new Tapis('A', bocauxA, fileAvalve,valvesDisponibles,mecanismesDisponibles,fileAmecanisme);
+		Thread tapisCourantA = new Thread(nouveauTapisA);
+		tapisCourantA.start();
 	}
-	
+
 	public static int askInput(String _message) 
 	{
 		//On passe en parametre le message en string et on retourne un int comme input de l'utilisateur

@@ -21,7 +21,7 @@ public class Tapis implements Runnable  {
 	private retourneurMecanisme retourneurMecanisme;
 	private LinkedBlockingQueue<Bocal> bocauxPleins;
 	//Classe qui permet de passer les bocaux en ordre de leur arrivée en demandant une valve au controleur de valve
-	public Tapis(char type, LinkedList<Bocal> listeBocaux,LinkedBlockingQueue<Valve> valvesDisponibles,LinkedBlockingQueue<Valve> valvesRetournes,LinkedBlockingQueue<Mecanisme> mecanismesDisponibles) {
+	public Tapis(char type, LinkedList<Bocal> listeBocaux,LinkedBlockingQueue<Valve> valvesDisponibles,LinkedBlockingQueue<Valve> valvesRetournes,LinkedBlockingQueue<Mecanisme> mecanismesRetournes,LinkedBlockingQueue<Mecanisme> mecanismesDisponibles) {
 		this.type = type;
 		this.listeBocaux = listeBocaux;
 		this.valvesDisponibles = valvesDisponibles;
@@ -34,13 +34,13 @@ public class Tapis implements Runnable  {
 		executorServiceMecanisme = Executors.newCachedThreadPool();
 		taskCompletionServiceMecanisme = new ExecutorCompletionService(
 				executorServiceMecanisme);
-		this.retourneurMecanisme = new retourneurMecanisme(mecanismesDisponibles, taskCompletionServiceMecanisme);
-		this.mecanismesDisponibles = mecanismesDisponibles; 
-		Etiquetteur test = new Etiquetteur(bocauxPleins, mecanismesDisponibles);
-		Thread etiquetteur = new Thread(test);
-		etiquetteur.start();
+		this.mecanismesDisponibles = mecanismesDisponibles;
+		this.retourneurMecanisme = new retourneurMecanisme(mecanismesRetournes, taskCompletionServiceMecanisme); 
 		Thread retourneurMecanismeThread = new Thread(retourneurMecanisme);
 		retourneurMecanismeThread.start();
+		Etiquetteur etiquetteur = new Etiquetteur(bocauxPleins,taskCompletionServiceMecanisme, mecanismesDisponibles);
+		Thread etiquetteurThread = new Thread(etiquetteur);
+		etiquetteurThread.start();
 		//Le retourneur de valve est un thread qui attend les callbacks de remplissage de pots et remets les valves dans les valves disponibles du contrôleur de pots
 		Thread retourneurValveThread = new Thread(retourneurValve);
 		retourneurValveThread.start();
@@ -59,7 +59,6 @@ public class Tapis implements Runnable  {
 				//Lorsque c'est remplit, la classe retourneur de valve sera appelé et 
 				//remettra le pot dans la liste de valve disponible du controleur de valve
 				taskCompletionServiceValve.submit(bocalCourant);
-
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

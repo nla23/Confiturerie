@@ -39,17 +39,6 @@ public class ControleurValve implements Runnable{
 		this.nombreDeNonprioritaireObtenusValve = 0;
 
 	}
-	//Permet de transformer un char en son correspondant dans l'enum
-	//Retourne null si le char n'est pas dans l'enum
-	private typesDisponibles compareCharToEnum(char c){
-		typesDisponibles retour = null;
-		for(typesDisponibles type : typesDisponibles.values()) {
-			if(type.getToChar() == c) {
-				retour = type;
-			}
-		}
-		return retour;
-	}
 
 	//Permet de déterminer s'il y a eu suffisamment du type prioritaire de bocal de passé. Si oui on change de type
 	private synchronized typesDisponibles determinerTour() {
@@ -57,12 +46,12 @@ public class ControleurValve implements Runnable{
 		if((nombreDePrioritaireObtenusValve <= nombreUneSorteAffile && nombrePotsPrioritairesDejaPasse < nombrePotsPrioritaires) ||  nombrePotsNonPrioritairesRestant == 0) {
 			nombreDePrioritaireObtenusValve++;
 			nombrePotsPrioritairesDejaPasse++;
-			return compareCharToEnum(typePrioritaire);
+			return Utils.compareCharToEnum(typePrioritaire);
 		}
 		else if(nombreDeNonprioritaireObtenusValve >= nombreUneSorteAffile ) {
 			nombreDePrioritaireObtenusValve = 0;
 			nombreDeNonprioritaireObtenusValve = 0;
-			return compareCharToEnum(typePrioritaire);
+			return Utils.compareCharToEnum(typePrioritaire);
 		}
 		else {
 			nombreDeNonprioritaireObtenusValve++;
@@ -78,7 +67,7 @@ public class ControleurValve implements Runnable{
 				Valve valveDisponible = _valvesDisponibles.take();
 				typesDisponibles typeMeritantValve = determinerTour();			
 				filesAttente.get(typeMeritantValve).put(valveDisponible);
-				Thread.sleep(500);
+				Thread.sleep(25);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
