@@ -94,7 +94,7 @@ public class Bocal implements Runnable
 			}
 		}
 			
-		if (this.type_priorite != this.type)
+		else if (this.type_priorite != this.type)
 		
 		// On met les threads du type non prioritaire en sleep car on veut s'assurer que tous les thread de l'autre type passent.
 		{
