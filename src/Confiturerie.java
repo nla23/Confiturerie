@@ -19,7 +19,8 @@ public class Confiturerie
 		Etiquettage etiquetteB = new Etiquettage('B');
 		Reservoir reservoirA = new Reservoir(5, 5,'A');
 		Reservoir reservoirB = new Reservoir(5, 5,'A');
-		
+		char tour;
+		int convoi = 2;
 		int nb_BocalA = askInput("Entrer le nombre de bocaux A:");
 		int nb_BocalB = askInput("Entrer le nombre de bocaux B:");
 	
@@ -43,6 +44,7 @@ public class Confiturerie
 			type_priorite=scan_type.next().charAt(0);
 		}
 			
+		tour  = type_priorite;
 		int i;
 		Bocal[] bocauxA = new Bocal[nb_BocalA];
 		Bocal[] bocauxB = new Bocal[nb_BocalB];
@@ -57,26 +59,62 @@ public class Confiturerie
 		// Traitement dans ce if du cas 1 et 2: On a soit plus de BocauxA que de BocauxB ou le nombre est egal.
 		// Cas 1: Plus de A que de B: On commence donc par alternance et on finit par faire les A restants (A, B, A, B, A, A ... A).
 		// Cas 2: On a le meme nombre de A que de B. On les fait tous par alternance tout simplement (A, B, A, B, ... A, B)
-	
-		if (nb_BocalA >= nb_BocalB)
-		{
+		Thread[] newThreadA = new Thread[nb_BocalA];
+		Thread[] newThreadB = new Thread[nb_BocalB];
+		int currentBatch = 0;
+		
+		//if (nb_BocalA >= nb_BocalB)
+		//{
 			for (i = 0; i < nb_BocalB; i++)
 			{
 				System.out.println("Creation Bocal " + i + " de type A");
 				bocauxA[i] = new Bocal('A',etiquetteA,valveA,reservoirA);
 				bocauxA[i].setNumero(i);
 				bocauxA[i].setTypePriorite(type_priorite);
-				Thread newThreadA = new Thread(bocauxA[i]);
-				newThreadA.start();
+				newThreadA[i] = new Thread(bocauxA[i]);
+				//newThreadA.start();
 			
 				System.out.println("Creation Bocal " + i + " de type B");
 				bocauxB[i] = new Bocal('B',etiquetteB,valveB,reservoirB);
 				bocauxB[i].setNumero(i);
 				bocauxB[i].setTypePriorite(type_priorite);
-				Thread newThreadB = new Thread(bocauxB[i]);
-				newThreadB.start();
+				newThreadB[i] = new Thread(bocauxB[i]);
+				//newThreadB.start();
 			}
 			
+			int j =0;
+			tour = 'A';
+			int z = 0;
+			int k = 0 ;
+			
+			//z nombre de pots A total
+			//j nombre de pots au total
+			//k nombre de pots B total
+			while (j<(nb_BocalA + nb_BocalB)) {
+				if (tour == 'A' && z < nb_BocalA) {
+					newThreadA[z].start();
+					j++;
+					z++;
+					currentBatch++;
+					if(currentBatch >= convoi) {
+						tour = 'B';
+						currentBatch = 0;
+					}
+				}
+				else if( k < nb_BocalB && tour == 'B'){
+					newThreadB[k].start();
+					j++;
+					k++;
+					currentBatch++;
+					if(currentBatch >= convoi) {
+						tour = 'A';
+						currentBatch = 0;
+					}
+				}
+			}
+		}
+			
+		/*	
 			// Creation des Bocaux A manquants, car on a plus de Bocaux A que de Bocaux B.
 			if (nb_BocalA > nb_BocalB)
 			{
@@ -95,9 +133,9 @@ public class Confiturerie
 				}
 			}
 		}
-				
+		*/		
 		// Cas 3: Plus de B que de A: On commence donc par alternance et on finit par faire les B restants (A, B, A, B, B, ... B).
-		if (nb_BocalA < nb_BocalB)
+		/*if (nb_BocalA < nb_BocalB)
 		{
 			for (i = 0; i < nb_BocalA; i++)
 			{
@@ -133,7 +171,8 @@ public class Confiturerie
 			}
 		}
 	}
-	
+	*/
+
 	public static int askInput(String _message) 
 	{
 		//On passe en parametre le message en string et on retourne un int comme input de l'utilisateur
