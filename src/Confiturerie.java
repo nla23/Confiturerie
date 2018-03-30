@@ -33,7 +33,6 @@ public class Confiturerie
 			nb_BocalB = askInputInt("Entrer le nombre de bocaux B:", reader);
 		}
 		
-		Scanner scan_type=new Scanner(System.in);
 		type_priorite = askInputChar("Quel type doit-on traiter en priorité? (A, B)", reader);
 		
 		
